@@ -3,6 +3,26 @@
 // Add 1x2 binary decoder
 `default_nettype none
 
+
+
+module mux4_multiple_cells (
+    input  wire  A0,
+    input  wire  A1,
+    input  wire  A2,
+    input  wire  A3,
+    input  wire  S0,
+    input  wire  S1,
+    output wire  X
+);
+    wire y_lo, y_hi;
+
+    sky130_fd_sc_hd__mux2_1  u_lo (.A0(A0), .A1(A1), .S(S0), .X(y_lo));
+    sky130_fd_sc_hd__mux2_1  u_hi (.A0(A2), .A1(A3), .S(S0), .X(y_hi));
+
+    sky130_fd_sc_hd__mux2_1  u_out (.A0(y_lo), .A1(y_hi), .S(S1), .X(X));
+
+endmodule
+
 module DEC1x2 (
     input           EN,
     input           A,
@@ -96,7 +116,7 @@ module MUX4x1 #(parameter   WIDTH=32)
             sky130_fd_sc_hd__diode_2 DIODE_A3MUX [(i+1)*8-1:i*8] (.DIODE(A3[(i+1)*8-1:i*8]));
 `endif
 
-            sky130_fd_sc_hd__mux4_1 MUX[7:0] (
+            mux4_multiple_cells MUX[7:0] (
                 .A0(A0[(i+1)*8-1:i*8]), 
                 .A1(A1[(i+1)*8-1:i*8]), 
                 .A2(A2[(i+1)*8-1:i*8]), 
